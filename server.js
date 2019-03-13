@@ -222,7 +222,7 @@ client.on('message', msg => {
   if ((command === 'player') || command === 'p') {
     let query = users[msg.author.id] && (args === undefined || args.length == 0) ? users[msg.author.id].player : args.join(' ');
     let results = fuzzset.get(query);
-    if (results.length === 0) {
+    if (results === null) {
       // if there is no such player
       msg.channel.send({
         embed: {
@@ -235,10 +235,10 @@ client.on('message', msg => {
     // give the most relevant result
     msg.channel.send(playerTable.get(results[0][1]).toRichEmbed());
 
-  } else if (comment === 'store') {
+  } else if (command === 'store') {
     let query = args.join(' ');
     let results = fuzzset.get(query);
-    if (results.length === 0) {
+    if (results.length === null) {
       msg.channel.send({
         embed: {
           color: 0xCF000E,
@@ -252,7 +252,7 @@ client.on('message', msg => {
       player: P.name,
       team: P.team
     }
-    fs.writeFile("data/myPlayer.json", JSON.stringify(users), err => {
+    fs.writeFile("data/saved_users.json", JSON.stringify(users), err => {
       if (err) console.error(err)
     });
     msg.channel.send({

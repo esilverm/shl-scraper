@@ -1,3 +1,5 @@
+const Discord = require("discord.js");
+const teamStyles = require("../../data/team_style.json");
 
 module.exports = class Goalie {
   constructor(playerName) {

@@ -42,7 +42,7 @@ module.exports = class Player {
                   .setThumbnail(teamStyles[this.team].logo)
                   .addField('Player Info', 'Position: ' + this.position)
                   .addBlankField();
-    if (this.position === 'Defense') {
+    if (this.position === 'Defenceman') {
       embed.addField('Current Statistics', `Games Played: ${this.games}\nGoals: ${this.goals}\nAssists: ${this.assists}\nPoints: ${points}` +
                                                   `\nPlus/Minus: ${this.plusminus}\nPenalty Minutes: ${this.pim}\nPoints Per Game: ${ptspergame}` +
                                                   `\nHits: ${this.hits}\nShots: ${this.shots}\nShot Percentage: ${shtperc}%` +
