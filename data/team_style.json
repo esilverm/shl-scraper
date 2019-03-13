@@ -1,0 +1,106 @@
+{
+	"Anaheim Outlaws": {
+		"logo": "https://i.imgur.com/PlHwfno.png",
+		"color": "0xe03b24"
+	},
+	"Anchorage Armada": {
+		"logo": "https://i.imgur.com/cOdA222.png",
+		"color": "0x848482"
+	},
+	"Colorado Raptors": {
+		"logo": "https://i.imgur.com/YpFgQPQ.png",
+		"color": "0xeece48"
+	},
+	"Detroit Falcons": {
+		"logo": "https://cdn.discordapp.com/attachments/350780886813245461/487719577225265162/rsz_1image2.png",
+		"color": "0xda3830"
+	},
+	"Halifax Raiders": {
+		"logo": "https://i.imgur.com/N8wiA7T.png",
+		"color": "0xd1ab59"
+	},
+	"Kelowna Knights": {
+		"logo": "https://i.imgur.com/uK1xhvJ.png",
+		"color": "0xe5d578"
+	},
+	"Lethbridge Lions": {
+		"logo": "https://cdn.discordapp.com/attachments/319912017597300747/555216455541719040/LethbridgeLions.png",
+		"color": "0xfadc28"
+	},
+	"Montreal Militia": {
+		"logo": "https://i.imgur.com/vcU4f6i.png",
+		"color": "0x9c9e9c"
+	},
+	"St Louis Scarecrows": {
+		"logo": "https://cdn.discordapp.com/attachments/385993662569644032/555211588840456222/Main_Logo_Thin_Boarder_V2.png",
+		"color": "0xb7ad78"
+	},
+	"Vancouver Whalers": {
+		"logo": "http://i.imgur.com/Eoj5m74.png",
+		"color": "0x018241"
+	},
+	"Buffalo Stampede": {
+		"logo": "http://oi67.tinypic.com/10xzqtj.jpg",
+		"color": "0xf0bc44"
+	},
+	"Calgary Dragons": {
+		"logo": "https://s29.postimg.cc/7vbp3zmjr/Calgary_Dragonslogo.png",
+		"color": "0xea3426"
+	},
+	"Chicago Syndicate": {
+		"logo": "https://media.discordapp.net/attachments/230750822538018816/532617899442176010/text_skyline.png?width=629&height=619",
+		"color": "0xf8c946"
+	},
+	"Edmonton Blizzard": {
+		"logo": "https://i.imgur.com/kFa1bxd.png",
+		"color": "0xa6dce9"
+	},
+	"Hamilton Steelhawks": {
+		"logo": "https://i.imgur.com/817jL6x.png",
+		"color": "0xd1d3d4"
+	},
+	"Los Angeles Panthers": {
+		"logo": "https://i.imgur.com/Ste68nh.png",
+		"color": "0xeb7d0b"
+	},
+	"Manhattan Rage": {
+		"logo": "https://cdn.discordapp.com/attachments/466409782899769344/486213551199879183/Ragelogo.png",
+		"color": "0xdf0916"
+	},
+	"Minnesota Chiefs": {
+		"logo": "https://i.imgur.com/v5brFa4.png",
+		"color": "0xdeb462"
+	},
+	"New England Wolfpack": {
+		"logo": "https://i.imgur.com/smBd1CZ.png",
+		"color": "0x067b33"
+	},
+	"New Orleans Specters": {
+		"logo": "https://i.imgur.com/3oEk9uh.png",
+		"color": "0x850eff"
+	},
+	"San Francisco Pride": {
+		"logo": "https://i.imgur.com/hTCxJl4.png",
+		"color": "0xd4af37"
+	},
+	"Tampa Bay Barracuda": {
+		"logo": "https://cdn.discordapp.com/attachments/336266019259678722/538090106448248851/TampaBayBarracuda5.png",
+		"color": "0x378197"
+	},
+	"Texas Renegades": {
+		"logo": "https://i.imgur.com/CCsVGwg.png",
+		"color": "0xd5d5d5"
+	},
+	"Toronto North Stars": {
+		"logo": "http://i207.photobucket.com/albums/bb119/mooshman31/logosmall.png",
+		"color": "0x195aa5"
+	},
+	"West Kendall Platoon": {
+		"logo": "http://i.imgur.com/7jrWIjt.png",
+		"color": "0xffffff"
+	},
+	"Winnipeg Jets": {
+		"logo": "http://i.imgur.com/b57y4mC.png",
+		"color": "0xb7282a"
+	}
+}
