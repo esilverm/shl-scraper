@@ -15,8 +15,6 @@ let season = 'S48';
 let type = 'Season'; //Season
 let jtype = 'Season';
 let type2 = '';
-let extraerrmsg = '\n\nYou know what? I\'m going to say it. I don\'t care that your player doesnt show up.\n-esilverm'
-let replacement_shl = '';
 // gather our initial data.
 let init = (async () => {
   await rp({
