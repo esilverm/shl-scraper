@@ -17,6 +17,7 @@ let jtype = 'Season';
 let type2 = '';
 // gather our initial data.
 let init = (async () => {
+  // fetch SMJHL data
   await rp({
     uri:`http://simulationhockey.com/games/smjhl/${season}/${type}/SMJHL${type2}-ProTeamScoring.html`,
     transform: (body) => cheerio.load(body)
@@ -41,6 +42,7 @@ let init = (async () => {
     console.log(err);
   })
 
+  // fetch SHL data
   await rp({
     uri:`http://simulationhockey.com/games/shl/${season}/${type}/SHL${type2}-ProTeamScoring.html`,
     transform: (body) => cheerio.load(body)
