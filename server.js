@@ -17,58 +17,7 @@ let jtype = 'Season';
 let type2 = '';
 // gather our initial data.
 let init = (async () => {
-  // fetch SMJHL data
-  await rp({
-    uri:`http://simulationhockey.com/games/smjhl/${season}/${type}/SMJHL${type2}-ProTeamScoring.html`,
-    transform: (body) => cheerio.load(body)
-  }).then(async ($) => {
-    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable1 tbody tr').toArray();
-    let promises = rows.map((i) => $(i)).map(handlePlayerStats1);
-
-    await Promise.all(promises);
-    return $;
-  }).then(async ($) => {
-    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable2 tbody tr').toArray();
-    let promises = rows.map((i) => $(i)).map(handlePlayerStats2);
-
-    await Promise.all(promises);
-    return $;
-  }).then (async ($) => {
-    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_GoaliesTable tbody tr').toArray();
-    let promises = rows.map((i) => $(i)).map(handleGoalieStats);
-
-    await Promise.all(promises);
-  }).catch(err => {
-    console.log(err);
-  })
-
-  // fetch SHL data
-  await rp({
-    uri:`http://simulationhockey.com/games/shl/${season}/${type}/SHL${type2}-ProTeamScoring.html`,
-    transform: (body) => cheerio.load(body)
-  }).then(async ($) => {
-    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable1 tbody tr').toArray();
-    let promises = rows.map((i) => $(i)).map(handlePlayerStats1);
-
-    await Promise.all(promises);
-    return $;
-  }).then(async ($) => {
-    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable2 tbody tr').toArray();
-    let promises = rows.map((i) => $(i)).map(handlePlayerStats2);
-
-    await Promise.all(promises);
-    return $;
-  }).then (async ($) => {
-    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_GoaliesTable tbody tr').toArray();
-    let promises = rows.map((i) => $(i)).map(handleGoalieStats);
-
-    await Promise.all(promises);
-  }).catch(err => {
-    console.log(err);
-  })
-
-  fuzzset = await FuzzySet(playerTable.getKeys());
-  console.log("Data Collected and ready for input");
+  await gatherAllPlayerData();
 })();
 
 client.on('ready', () => {
@@ -167,61 +116,44 @@ client.login(config.token);
 // every 5 minutes, update the data
 setInterval(() => {
   let init = (async () => {
-    await rp({
-      uri:`http://simulationhockey.com/games/smjhl/${season}/${type}/SMJHL${type2}-ProTeamScoring.html`,
-      transform: (body) => cheerio.load(body)
-    }).then(async ($) => {
-      let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable1 tbody tr').toArray();
-      let promises = rows.map((i) => $(i)).map(handlePlayerStats1);
-
-      await Promise.all(promises);
-      return $;
-    }).then(async ($) => {
-      let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable2 tbody tr').toArray();
-      let promises = rows.map((i) => $(i)).map(handlePlayerStats2);
-
-      await Promise.all(promises);
-      return $;
-    }).then (async ($) => {
-      let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_GoaliesTable tbody tr').toArray();
-      let promises = rows.map((i) => $(i)).map(handleGoalieStats);
-
-      await Promise.all(promises);
-      return $;
-    }).catch(err => {
-      console.log(err);
-    })
-
-    await rp({
-      uri:`http://simulationhockey.com/games/shl/${season}/${type}/SHL${type2}-ProTeamScoring.html`,
-      transform: (body) => cheerio.load(body)
-    }).then(async ($) => {
-      let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable1 tbody tr').toArray();
-      let promises = rows.map((i) => $(i)).map(handlePlayerStats1);
-
-      await Promise.all(promises);
-      return $;
-    }).then(async ($) => {
-      let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable2 tbody tr').toArray();
-      let promises = rows.map((i) => $(i)).map(handlePlayerStats2);
-
-      await Promise.all(promises);
-      return $;
-    }).then (async ($) => {
-      let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_GoaliesTable tbody tr').toArray();
-      let promises = rows.map((i) => $(i)).map(handleGoalieStats);
-
-      await Promise.all(promises);
-      return $;
-    }).catch(err => {
-      console.log(err);
-    })
-
-    fuzzset = await FuzzySet(playerTable.getKeys());
-    console.log("Data Collected and ready for input");
+    await gatherAllPlayerData();
   })();
 }, 5 * 60 * 1000);
 
+async function gatherAllPlayerData(){
+  await gatherPlayerDataByLeague("SHL");
+  await gatherPlayerDataByLeague("SMJHL");
+
+  fuzzset = await FuzzySet(playerTable.getKeys());
+  console.log("Data Collected and ready for input");
+}
+
+async function gatherPlayerDataByLeague(league){
+  // fetch player data for league
+  await rp({
+    uri:`http://simulationhockey.com/games/${league.toLowerCase()}/${season}/${type}/${league}${type2}-ProTeamScoring.html`,
+    transform: (body) => cheerio.load(body)
+  }).then(async ($) => {
+    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable1 tbody tr').toArray();
+    let promises = rows.map((i) => $(i)).map(handlePlayerStats1);
+
+    await Promise.all(promises);
+    return $;
+  }).then(async ($) => {
+    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable2 tbody tr').toArray();
+    let promises = rows.map((i) => $(i)).map(handlePlayerStats2);
+
+    await Promise.all(promises);
+    return $;
+  }).then (async ($) => {
+    let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_GoaliesTable tbody tr').toArray();
+    let promises = rows.map((i) => $(i)).map(handleGoalieStats);
+
+    await Promise.all(promises);
+  }).catch(err => {
+    console.log(err);
+  })
+}
 
 async function handlePlayerStats1(row) {
   let $tds = row.find('td');
