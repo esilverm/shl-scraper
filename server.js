@@ -14,7 +14,7 @@ const fs = require('fs');
 const playerTable = new HashTable(150);
 const teamStandingsTable = new HashTable();
 const leagueStandingsTable = new HashTable();
-let fuzzsetplayers;
+let fuzzset;
 let fuzzsetteamstandings;
 let season = 'S48';
 let type = 'Season'; //Season
@@ -44,7 +44,7 @@ client.on('message', msg => {
   if (!msg.content.startsWith(config.prefix) || msg.author.bot) return;
   let args = msg.content.slice(config.prefix.length).trim().split(/ +/g);
   let command = args.shift().toLowerCase();
-  let users = JSON.parse(fs.readFileSync('shl-scraper/data/saved_users.json', 'utf8'));
+  let users = JSON.parse(fs.readFileSync('data/saved_users.json', 'utf8'));
 
   // parse commands
   if ((command === 'player') || command === 'p') {
@@ -53,7 +53,7 @@ client.on('message', msg => {
         console.log(msg.author.username + " in " + msg.guild.name);
       }
     let query = users[msg.author.id] && (args === undefined || args.length == 0) ? users[msg.author.id].player : args.join(' ');
-    let results = fuzzsetplayers.get(query);
+    let results = fuzzset.get(query);
     if (results === null || results[0][0] < 0.8) {
       // if there is no such player
       msg.channel.send({
@@ -73,7 +73,7 @@ client.on('message', msg => {
       console.log(msg.author.username + " in " + msg.guild.name);
     }
     let query = args.join(' ');
-    let results = fuzzsetplayers.get(query);
+    let results = fuzzset.get(query);
     if (results === null || results[0][0] < 0.8) {
       msg.channel.send({
         embed: {
@@ -88,7 +88,7 @@ client.on('message', msg => {
       player: P.name,
       team: P.team
     }
-    fs.writeFile("shl-scraper/data/saved_users.json", JSON.stringify(users), err => {
+    fs.writeFile("data/saved_users.json", JSON.stringify(users), err => {
       if (err) console.error(err)
     });
     msg.channel.send({
@@ -115,6 +115,15 @@ client.on('message', msg => {
       msg.channel.send("DON'T SHOOT ME!!!!!");
     }
   } else if (command === 'team'){
+    if (type != "Season"){
+      msg.channel.send({
+        embed: {
+          color: 0xCF000E,
+          description: 'Sorry, this feature is only available during the regular season.'
+        }
+      });
+      return;
+    }
     let query = args.join(' ');
     let results = fuzzsetteamstandings.get(query);
     if (results === null || results[0][0] < 0.5) {
@@ -130,8 +139,26 @@ client.on('message', msg => {
     // give the most relevant result
     msg.channel.send(teamStandingsTable.get(results[0][1]).toRichEmbed());
   } else if (command === 'standings'){
+    if (type != "Season"){
+      msg.channel.send({
+        embed: {
+          color: 0xCF000E,
+          description: 'Sorry, this feature is only available during the regular season.'
+        }
+      });
+      return;
+    }
     let query = args.join(' ');
     query = query.toUpperCase();
+    if (query != "SHL" && query != "SMJHL"){
+      msg.channel.send({
+        embed: {
+          color: 0xCF000E,
+          description: 'Sorry, currently the only supported leagues are the SHL and the SMJHL.'
+        }
+      });
+      return;
+    }
     msg.channel.send(leagueStandingsTable.get(query).toRichEmbed());
   }
 });
@@ -150,14 +177,14 @@ async function gatherAllPlayerData(){
   await gatherPlayerDataByLeague("SHL");
   await gatherPlayerDataByLeague("SMJHL");
 
-  fuzzsetplayers = await FuzzySet(playerTable.getKeys());
+  fuzzset = await FuzzySet(playerTable.getKeys());
   console.log("Player Data Collected and ready for input");
 }
 
 async function gatherPlayerDataByLeague(league){
   // fetch player data for league
   await rp({
-    uri:`http://simulationhockey.com/games/${league.toLowerCase()}/${season}/${type}/${league}${type2}-ProTeamScoring.html`,
+    uri:`http://simulationhockey.com/games/${league.toLowerCase()}/${season}/${league === "SHL" ? type : jtype}/${league}${type2}-ProTeamScoring.html`,
     transform: (body) => cheerio.load(body)
   }).then(async ($) => {
     let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable1 tbody tr').toArray();
@@ -270,6 +297,9 @@ async function gatherAllTeamStandingsData(){
 }
 
 async function gatherStandingsDataByLeague(league){
+  if (type != "Season"){
+    return;
+  }
   // fetch player data for league
   await rp({
     uri:`http://simulationhockey.com/games/${league.toLowerCase()}/${season}/${type}/${league}${type2}-ProStanding.html`,
