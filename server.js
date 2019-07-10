@@ -7,10 +7,15 @@ const cheerio = require('cheerio');
 const HashTable = require('./src/utils/HashTable.js');
 const Player = require('./src/utils/Player.js');
 const Goalie = require('./src/utils/Goalie.js');
+const TeamStanding = require('./src/utils/TeamStanding.js');
+const LeagueStanding = require('./src/utils/LeagueStanding.js');
 const FuzzySet = require('fuzzyset.js');
 const fs = require('fs');
 const playerTable = new HashTable(150);
-let fuzzset;
+const teamStandingsTable = new HashTable();
+const leagueStandingsTable = new HashTable();
+let fuzzsetplayers;
+let fuzzsetteamstandings;
 let season = 'S48';
 let type = 'Season'; //Season
 let jtype = 'Season';
@@ -18,6 +23,7 @@ let type2 = '';
 // gather our initial data.
 let init = (async () => {
   await gatherAllPlayerData();
+  await gatherAllTeamStandingsData();
 })();
 
 client.on('ready', () => {
@@ -38,7 +44,7 @@ client.on('message', msg => {
   if (!msg.content.startsWith(config.prefix) || msg.author.bot) return;
   let args = msg.content.slice(config.prefix.length).trim().split(/ +/g);
   let command = args.shift().toLowerCase();
-  let users = JSON.parse(fs.readFileSync('data/saved_users.json', 'utf8'));
+  let users = JSON.parse(fs.readFileSync('shl-scraper/data/saved_users.json', 'utf8'));
 
   // parse commands
   if ((command === 'player') || command === 'p') {
@@ -47,7 +53,7 @@ client.on('message', msg => {
         console.log(msg.author.username + " in " + msg.guild.name);
       }
     let query = users[msg.author.id] && (args === undefined || args.length == 0) ? users[msg.author.id].player : args.join(' ');
-    let results = fuzzset.get(query);
+    let results = fuzzsetplayers.get(query);
     if (results === null || results[0][0] < 0.8) {
       // if there is no such player
       msg.channel.send({
@@ -67,7 +73,7 @@ client.on('message', msg => {
       console.log(msg.author.username + " in " + msg.guild.name);
     }
     let query = args.join(' ');
-    let results = fuzzset.get(query);
+    let results = fuzzsetplayers.get(query);
     if (results === null || results[0][0] < 0.8) {
       msg.channel.send({
         embed: {
@@ -82,7 +88,7 @@ client.on('message', msg => {
       player: P.name,
       team: P.team
     }
-    fs.writeFile("data/saved_users.json", JSON.stringify(users), err => {
+    fs.writeFile("shl-scraper/data/saved_users.json", JSON.stringify(users), err => {
       if (err) console.error(err)
     });
     msg.channel.send({
@@ -108,6 +114,25 @@ client.on('message', msg => {
     if (r <= 0.1) {
       msg.channel.send("DON'T SHOOT ME!!!!!");
     }
+  } else if (command === 'team'){
+    let query = args.join(' ');
+    let results = fuzzsetteamstandings.get(query);
+    if (results === null || results[0][0] < 0.5) {
+      // if there is no such team standing
+      msg.channel.send({
+        embed: {
+          color: 0xCF000E,
+          description: 'Sorry, I couldn\'t find that team. Note that teams will not show up if they have not played a game in the current season or playoffs.'
+        }
+      });
+      return;
+    }
+    // give the most relevant result
+    msg.channel.send(teamStandingsTable.get(results[0][1]).toRichEmbed());
+  } else if (command === 'standings'){
+    let query = args.join(' ');
+    query = query.toUpperCase();
+    msg.channel.send(leagueStandingsTable.get(query).toRichEmbed());
   }
 });
 
@@ -117,6 +142,7 @@ client.login(config.token);
 setInterval(() => {
   let init = (async () => {
     await gatherAllPlayerData();
+    await gatherAllTeamStandingsData();
   })();
 }, 5 * 60 * 1000);
 
@@ -124,8 +150,8 @@ async function gatherAllPlayerData(){
   await gatherPlayerDataByLeague("SHL");
   await gatherPlayerDataByLeague("SMJHL");
 
-  fuzzset = await FuzzySet(playerTable.getKeys());
-  console.log("Data Collected and ready for input");
+  fuzzsetplayers = await FuzzySet(playerTable.getKeys());
+  console.log("Player Data Collected and ready for input");
 }
 
 async function gatherPlayerDataByLeague(league){
@@ -233,4 +259,76 @@ async function handleGoalieStats(row) {
   P.sa = +$tds.eq(11).text();
 
   playerTable.set(name, P);
+}
+
+async function gatherAllTeamStandingsData(){
+  await gatherStandingsDataByLeague("SHL");
+  await gatherStandingsDataByLeague("SMJHL");
+
+  fuzzsetteamstandings = await FuzzySet(teamStandingsTable.getKeys());
+  console.log("Team Standings Data Collected and ready for input");
+}
+
+async function gatherStandingsDataByLeague(league){
+  // fetch player data for league
+  await rp({
+    uri:`http://simulationhockey.com/games/${league.toLowerCase()}/${season}/${type}/${league}${type2}-ProStanding.html`,
+    transform: (body) => cheerio.load(body)
+  }).then(async ($) => {
+    //let rows = $('*[id^="tabmain2"] tbody tr').toArray();
+    let counter = 0;
+    let conferenceNames = [];
+    let leagueStanding = new LeagueStanding(league);
+    $('*[id^="tabmain2"] h2').each(function (i, element){
+      let header = $(this).text();
+      conferenceNames.push(header);
+    });
+
+    $('*[id^="tabmain2"] tbody').each(async function (i, element){
+      let teamRows = $(this).children('tr').toArray();
+      let promises = teamRows.map((i) => $(i)).map(
+        function (i){ return handleTeamStandings(i, leagueStanding, conferenceNames[counter]); }
+      );
+  
+      counter++;
+      await Promise.all(promises);
+    });
+
+    leagueStandingsTable.set(league, leagueStanding);
+    return $;
+  }).catch(err => {
+    console.log(err);
+  })
+}
+
+async function handleTeamStandings(row, league, conference) {
+  let $tds = row.find('td');
+  if (league.leagueName == "SHL"){
+    $tds.splice(7, 1); //removes the ROW column
+  }
+  
+  let teamStanding = new TeamStanding();
+
+  teamStanding.conference = conference;
+  teamStanding.po = $tds.eq(0).text();
+  teamStanding.team = $tds.eq(1).text();
+  teamStanding.teamstyle = teamStanding.team.split('.').join("");
+  teamStanding.gamesplayed = +$tds.eq(2).text();
+  teamStanding.wins = +$tds.eq(3).text();
+  teamStanding.losses = +$tds.eq(4).text();
+  teamStanding.otlosses = +$tds.eq(5).text();
+  teamStanding.points = +$tds.eq(6).text();
+  teamStanding.goalsfor = +$tds.eq(7).text();
+  teamStanding.goalsagainst = +$tds.eq(8).text();
+  teamStanding.goaldiff = +$tds.eq(9).text();
+  teamStanding.percentage = +$tds.eq(10).text();
+  teamStanding.home = $tds.eq(11).text();
+  teamStanding.visitor = $tds.eq(12).text();
+  teamStanding.last10 = $tds.eq(13).text();
+  teamStanding.homelast10 = $tds.eq(14).text();
+  teamStanding.visitorlast10 = $tds.eq(15).text();
+  teamStanding.streak = $tds.eq(16).text();
+
+  teamStandingsTable.set(teamStanding.team, teamStanding);
+  league.addTeamStanding(teamStanding);
 }
