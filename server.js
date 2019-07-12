@@ -131,7 +131,7 @@ async function gatherAllPlayerData(){
 async function gatherPlayerDataByLeague(league){
   // fetch player data for league
   await rp({
-    uri:`http://simulationhockey.com/games/${league.toLowerCase()}/${season}/${type}/${league}${type2}-ProTeamScoring.html`,
+    uri:`http://simulationhockey.com/games/${league.toLowerCase()}/${season}/${league === "SHL" ? type : jtype}/${league}${type2}-ProTeamScoring.html`,
     transform: (body) => cheerio.load(body)
   }).then(async ($) => {
     let rows = $('*[id^="STHS_JS_Team_"] .STHSScoring_PlayersTable1 tbody tr').toArray();
