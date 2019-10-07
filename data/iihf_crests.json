@@ -1,0 +1,55 @@
+{
+	"Great Britain"": {
+		"logo": "https://cdn.discordapp.com/attachments/606240004896849920/606240031958368257/GreatBritainIceHockey.png",
+		"color": "0x9b341f"
+	},
+	"Germany": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606247541234728979/imageedit_1_9891263537.png",
+		"color": "0x46374d"
+	},
+	"Czechia": {
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Greater_coat_of_arms_of_the_Czech_Republic_%28Presidential_version%29.svg/170px-Greater_coat_of_arms_of_the_Czech_Republic_%28Presidential_version%29.svg.png",
+		"color": "0xe5cc46"
+	},
+	"Canada": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606247811981246526/imageedit_4_3329534653.png",
+		"color": "0x46bf2c"
+	},
+	"Austria": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606247811981246526/imageedit_4_3329534653.png",
+		"color": "0xbfb73b"
+	},
+	"Finland": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606249766443155477/imageedit_21_6902294326.png",
+		"color": "0x3681bd"
+	},
+	"Ireland": {
+		"logo": "https://cdn.discordapp.com/attachments/606240004896849920/606249962396975107/imageedit_24_2841088972.png",
+		"color": "0x377e4d"
+	},
+	"Latvia": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606250506175774765/Latvia.png",
+		"color": "0x972c37"
+	},
+	"USA": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606251194209533972/USA.png",
+		"color": "0x11d87"
+	},
+	"Sweden": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606251194209533972/USA.png",
+		"color": "0xf5cd47"
+	},
+	"Switzerland": {
+		"logo": "https://media.discordapp.net/attachments/606240004896849920/606252578124070932/imageedit_37_8359060816.png",
+		"color": "0xff0000"
+	},
+	"Japan": {
+		"logo": "https://cdn.discordapp.com/attachments/606240004896849920/606251865579192330/Japan.png",
+		"color": "0xffffff"
+	},
+	"Norway": {
+		"logo": "https://cdn.discordapp.com/attachments/606240004896849920/606252272049061920/imageedit_32_4436220806.png",
+		"color": "0x1a4b94"
+	}
+
+}
