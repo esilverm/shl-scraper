@@ -27,11 +27,11 @@ let init = (async () => {
 })();
 
 client.on('ready', () => {
-  console.log(`Ready to serve in ${client.channels.size} channels on ${client.guilds.size} servers, for a total of ${client.users.size} users.`)
-  /**
+  console.log(`Ready to serve in ${client.channels.size} channels on ${client.guilds.size} servers, for a total of ${client.users.size} users.`);
+  /*
   for (let i = 0; i < client.guilds.size; i++) {
     console.log(client.guilds.array()[i].name);
-  }**/
+  }*/
 });
 
 client.on("error", (e) => {
@@ -319,7 +319,7 @@ async function gatherStandingsDataByLeague(league){
       let promises = teamRows.map((i) => $(i)).map(
         function (i){ return handleTeamStandings(i, leagueStanding, conferenceNames[counter]); }
       );
-  
+
       counter++;
       await Promise.all(promises);
     });
@@ -336,7 +336,7 @@ async function handleTeamStandings(row, league, conference) {
   if (league.leagueName == "SHL"){
     $tds.splice(7, 1); //removes the ROW column
   }
-  
+
   let teamStanding = new TeamStanding();
 
   teamStanding.conference = conference;
