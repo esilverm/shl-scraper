@@ -109,7 +109,6 @@ client.on('message', msg => {
     msg.channel.send(playerTable.get(players[random]).toRichEmbed());
 
   } else if (command === 'bang') {
-    // wts Halifax
     let r = Math.random();
     if (r <= 0.1) {
       msg.channel.send("DON'T SHOOT ME!!!!!");
